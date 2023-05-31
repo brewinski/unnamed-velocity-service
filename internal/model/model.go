@@ -12,3 +12,9 @@ type Note struct {
 	SubTitle   string
 	Text       string
 }
+
+type NoteBody struct {
+	Title    string `validate:"required"`
+	SubTitle string `validate:"required"`
+	Text     string `validate:"required"`
+}

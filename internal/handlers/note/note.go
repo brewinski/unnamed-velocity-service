@@ -11,7 +11,6 @@ func CreateNotes(c *fiber.Ctx) error {
 
 	// store the body of the note in the note variable
 	err := c.BodyParser(&note)
-
 	if err != nil {
 		return fiber.ErrBadRequest
 	}

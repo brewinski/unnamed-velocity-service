@@ -4,6 +4,7 @@ POST {{baseUrl}}/api/note
 Content-Type: application/json
 
 {
-    "title": "Note 1",
-    "subTitle": "Content 1",
+    "Title": "Title 1",
+    "SubTitle": "Content 1",
+    "Text": "Text"
 }
