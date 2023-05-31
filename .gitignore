@@ -1,0 +1,6 @@
+# sqlite db
+fiber.db
+
+# go files and bins
+__debug_bin
+server

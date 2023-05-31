@@ -1,7 +1,6 @@
 package router
 
 import (
-	noteRoutes "github.com/brewinski/unnamed-fiber/internal/router/note"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -14,14 +13,9 @@ func SetupRoutes(app *fiber.App) {
 		EnableStackTrace: true,
 	})) // Group endpoints with param 'api' and log whenever this endpoint is hit.
 
-	noteRoutes.SetupNotesRoutes(api)
+	api_v1 := api.Group("v1") // Group endpoints with param 'v1'
+	setupNotesRoutes(api_v1)
 
-	user := api.Group("user")
-
-	user.Get("/", func(c *fiber.Ctx) error {
-		if true {
-			return fiber.ErrBadRequest
-		}
-		return c.SendString("All users")
-	})
+	api_v2 := api.Group("v2") // Group endpoints with param 'v2'
+	setupNotesRoutes(api_v2)
 }
