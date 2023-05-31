@@ -1,0 +1,5 @@
+package validationMiddleware
+
+func ValidateStruct() {
+
+}
