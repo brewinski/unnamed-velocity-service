@@ -1,16 +1,16 @@
 package model
 
 import (
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Note struct {
-	gorm.Model           // Adds some metadata fields to the table
-	ID         uuid.UUID `gorm:"type:uuid"` // Explicitly specify the type to be uuid
-	Title      string
-	SubTitle   string
-	Text       string
+	gorm.Model // Adds some metadata fields to the table
+	// ID         uuid.UUID `gorm:"type:uuid;primaryKey;default:uuid_generate_v4();unique;not null;"` // Explicitly specify the type to be uuid
+	ID       int `gorm:"primaryKey;unique;not null;"` // Explicitly specify the type to be uuid
+	Title    string
+	SubTitle string
+	Text     string
 }
 
 // transport layer

@@ -10,5 +10,7 @@ import (
 func setupNotesRoutes(router fiber.Router) {
 	note := router.Group("note")
 
-	note.Post("", middleware.ValidationHandlerFactory(model.CreateNoteBody{}), handler.CreateNoteHandler)
+	note.Post("",
+		middleware.ValidationHandlerFactory(model.CreateNoteBody{}),
+		handler.CreateNoteHandler)
 }

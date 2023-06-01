@@ -1,5 +1,5 @@
 # sqlite db
-fiber.db
+fiber.sqlite
 
 # go files and bins
 __debug_bin
