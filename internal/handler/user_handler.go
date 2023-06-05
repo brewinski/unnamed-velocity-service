@@ -27,7 +27,7 @@ func ListUsersHandler(c *fiber.Ctx) error {
 		data := model.UserResponse{}
 		err = json.Unmarshal([]byte(user.User_Data), &data)
 		if err != nil {
-			return err
+			return fiber.ErrInternalServerError
 		}
 
 		usersResponse = append(usersResponse, data)
@@ -36,11 +36,10 @@ func ListUsersHandler(c *fiber.Ctx) error {
 		user.First_Name = data.First_Name
 		user.Last_Name = data.Last_Name
 
-		UpdateUserData(data, user)
-	}
-
-	if err != nil {
-		return err
+		err := UpdateUserData(data, user)
+		if err != nil {
+			return fiber.ErrInternalServerError
+		}
 	}
 
 	return c.JSON(usersResponse)
@@ -71,7 +70,6 @@ func ListUsers() ([]model.User, error) {
 	users := []model.User{}
 
 	err := db.Find(&users).Error
-
 	if err != nil {
 		return users, err
 	}
@@ -84,7 +82,6 @@ func GetUserByID(id string) (*model.User, error) {
 	user := &model.User{}
 
 	err := db.Where("id = ?", id).First(&user).Error
-
 	if err != nil {
 		return user, err
 	}
