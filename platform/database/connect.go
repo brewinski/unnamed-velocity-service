@@ -64,7 +64,7 @@ func ConnectSqliteDB() {
 	fmt.Println("Connection Opened to Database")
 
 	// Migrate the schema
-	err = DB.AutoMigrate(&model.Note{})
+	err = DB.Debug().AutoMigrate(&model.Note{}, &model.User{})
 
 	if err != nil {
 		panic("failed to migrate database")

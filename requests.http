@@ -4,7 +4,12 @@ POST {{baseUrl}}/api/v1/note
 Content-Type: application/json
 
 {
-    "Title": "Testing",
+    "Title": "T",
     "SubTitle": "Content 1",
     "Text": "Text"
 }
+
+###
+
+GET {{baseUrl}}/api/v1/user
+Content-Type: application/json

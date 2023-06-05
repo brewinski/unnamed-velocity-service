@@ -4,3 +4,5 @@ fiber.sqlite
 # go files and bins
 __debug_bin
 server
+
+user-profile-credentials.json

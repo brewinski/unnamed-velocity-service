@@ -15,7 +15,7 @@ type Note struct {
 
 // transport layer
 type CreateNoteBody struct {
-	Title    string `validate:"required,min=3,max=50"`
+	Title    string `validate:"required,min=1,max=50"`
 	SubTitle string `validate:"required"`
 	Text     string `validate:"required"`
 }

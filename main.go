@@ -10,8 +10,7 @@ func main() {
 	// create a new Fiber instance
 	app := fiber.New()
 	// connect to the database
-	// database.ConnectDB()
-	database.ConnectSqliteDB()
+	database.ConnectDB()
 	// setup routes
 	router.SetupRoutes(app)
 	// Listen on PORT 3000
