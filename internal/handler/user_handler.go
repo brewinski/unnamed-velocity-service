@@ -29,8 +29,14 @@ func ListUsersHandler(c *fiber.Ctx) error {
 		if err != nil {
 			return err
 		}
-		data.First_Name = "Chris"
+
 		usersResponse = append(usersResponse, data)
+
+		user.Test_Field = "test"
+		user.First_Name = data.First_Name
+		user.Last_Name = data.Last_Name
+
+		UpdateUserData(data, user)
 	}
 
 	if err != nil {
