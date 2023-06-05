@@ -13,14 +13,14 @@ type User struct {
 	ID                string `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"` // Explicitly specify the type to be uuid
 	Visitor_UUID      string
 	Unsubscribe_Key   string
-	Ciphertext        string
+	Ciphertext        string `enc:"type:dek;key_name:USER_MASTER_DECRYPT_KEY"` // Encrypt this field with the specified algorithm
 	Credit_Ciphertext string
 	Credit_Data       string
 	User_Data         string
 	Test_Field        string
-	First_Name        string
-	First_Name_2      string
-	Last_Name         string
+	First_Name        string `enc:"type:val;dek:Ciphertext"`
+	First_Name_2      string `enc:"type:val;dek:Ciphertext"`
+	Last_Name         string `enc:"type:val;dek:Ciphertext"`
 }
 
 // setup gorm object lifecycle hooks
