@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/brewinski/unnamed-fiber/db"
-	router "github.com/brewinski/unnamed-fiber/pkg/router"
+	router "github.com/brewinski/unnamed-fiber/router"
 	"github.com/gofiber/fiber/v2"
 )
 
