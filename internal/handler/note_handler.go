@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/brewinski/unnamed-fiber/internal/model"
+	"github.com/brewinski/unnamed-fiber/data"
 	"github.com/brewinski/unnamed-fiber/platform/database"
 	"github.com/gofiber/fiber/v2"
 )
@@ -11,7 +11,7 @@ import (
 
 func CreateNoteHandler(c *fiber.Ctx) error {
 	// db := database.DB
-	note := model.Note{}
+	note := data.Note{}
 
 	// store the body of the note in the note variable
 	err := c.BodyParser(&note)
@@ -35,7 +35,7 @@ func CreateNoteHandler(c *fiber.Ctx) error {
 	return c.JSON(readNote)
 }
 
-func CreateNote(note model.Note) (model.Note, error) {
+func CreateNote(note data.Note) (data.Note, error) {
 	db := database.DB
 
 	err := db.Create(&note).Error
@@ -47,9 +47,9 @@ func CreateNote(note model.Note) (model.Note, error) {
 	return note, nil
 }
 
-func readNote(id int) (model.Note, error) {
+func readNote(id int) (data.Note, error) {
 	db := database.DB
-	note := model.Note{}
+	note := data.Note{}
 
 	err := db.First(&note, id).Error
 

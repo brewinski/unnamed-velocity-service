@@ -3,7 +3,7 @@ fiber.sqlite
 
 # go files and bins
 __debug_bin
-server
+bin
 
 user-profile-credentials.json
 .DS_Store

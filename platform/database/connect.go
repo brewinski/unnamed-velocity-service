@@ -5,7 +5,7 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/brewinski/unnamed-fiber/internal/model"
+	"github.com/brewinski/unnamed-fiber/data"
 	"github.com/brewinski/unnamed-fiber/pkg/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
@@ -41,7 +41,7 @@ func ConnectDB() {
 	fmt.Println("Connection Opened to Database")
 
 	// Migrate the schema
-	err = DB.AutoMigrate(&model.Note{}, &model.User{}, &model.Credit{})
+	err = DB.AutoMigrate(&data.Note{}, &data.User{}, &data.Credit{})
 
 	if err != nil {
 		panic("failed to migrate database")
@@ -64,7 +64,7 @@ func ConnectSqliteDB() {
 	fmt.Println("Connection Opened to Database")
 
 	// Migrate the schema
-	err = DB.Debug().AutoMigrate(&model.Note{}, &model.User{}, &model.Credit{})
+	err = DB.Debug().AutoMigrate(&data.Note{}, &data.User{}, &data.Credit{})
 
 	if err != nil {
 		panic("failed to migrate database")

@@ -3,7 +3,7 @@ package handler
 import (
 	"encoding/json"
 
-	"github.com/brewinski/unnamed-fiber/internal/model"
+	"github.com/brewinski/unnamed-fiber/data"
 	"github.com/brewinski/unnamed-fiber/platform/database"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -23,21 +23,21 @@ func ListUsersHandler(c *fiber.Ctx) error {
 	}
 
 	// decrypt all users in parallel
-	userChannel := make(chan model.User, len(users))
+	userChannel := make(chan data.User, len(users))
 	limit := make(chan struct{}, 10)
 	for _, user := range users {
 		limit <- struct{}{}
-		go func(user model.User) {
+		go func(user data.User) {
 			user.Decrypt()
 			userChannel <- user
 			<-limit
 		}(user)
 	}
 
-	usersResponse := []model.UserResponse{}
+	usersResponse := []data.UserResponse{}
 
 	for user := range userChannel {
-		data := model.UserResponse{}
+		data := data.UserResponse{}
 		err = json.Unmarshal([]byte(user.User_Data), &data)
 		if err != nil {
 			return fiber.ErrInternalServerError
@@ -62,9 +62,9 @@ func ListUsersHandler(c *fiber.Ctx) error {
 	return c.JSON(usersResponse)
 }
 
-func GetCreditScoreByUserID(userID string) (*model.Credit, error) {
+func GetCreditScoreByUserID(userID string) (*data.Credit, error) {
 	db := database.DB
-	credit := &model.Credit{}
+	credit := &data.Credit{}
 
 	err := db.Joins("User").Find(credit, "user_id = ?", userID).Error
 	if err != nil {
@@ -76,7 +76,7 @@ func GetCreditScoreByUserID(userID string) (*model.Credit, error) {
 
 func DeleteCreditScoreByUserID(userID string) error {
 	db := database.DB
-	credit := &model.Credit{}
+	credit := &data.Credit{}
 
 	err := db.Delete(credit, "user_id = ?", userID).Error
 	if err != nil {
@@ -86,21 +86,21 @@ func DeleteCreditScoreByUserID(userID string) error {
 	return nil
 }
 
-func CreateCreditScoreByUserID(userID string) (*model.Credit, error) {
+func CreateCreditScoreByUserID(userID string) (*data.Credit, error) {
 	db := database.DB
-	err := db.Create(&model.Credit{Score: "100", User: model.User{ID: userID}}).Error
+	err := db.Create(&data.Credit{Score: "100", User: data.User{ID: userID}}).Error
 	if err != nil {
 		return nil, err
 	}
 
-	credit := &model.Credit{}
+	credit := &data.Credit{}
 	db.Find(credit, "user_id = ?", userID)
 
 	return credit, nil
 }
 
 func UpdateUserDataHandler(c *fiber.Ctx) error {
-	userRequest := &model.UserResponse{}
+	userRequest := &data.UserResponse{}
 	err := c.BodyParser(userRequest)
 	if err != nil {
 		return err
@@ -119,9 +119,9 @@ func UpdateUserDataHandler(c *fiber.Ctx) error {
 	return c.JSON(userRequest)
 }
 
-func ListUsers() ([]model.User, error) {
+func ListUsers() ([]data.User, error) {
 	db := database.DB
-	users := []model.User{}
+	users := []data.User{}
 
 	err := db.Find(&users).Error
 	if err != nil {
@@ -131,9 +131,9 @@ func ListUsers() ([]model.User, error) {
 	return users, nil
 }
 
-func GetUserByID(id string) (*model.User, error) {
+func GetUserByID(id string) (*data.User, error) {
 	db := database.DB
-	user := &model.User{}
+	user := &data.User{}
 
 	err := db.Where("id = ?", id).First(&user).Error
 	if err != nil {
@@ -143,7 +143,7 @@ func GetUserByID(id string) (*model.User, error) {
 	return user, nil
 }
 
-func UpdateUserData(userRequest model.UserResponse, user model.User) error {
+func UpdateUserData(userRequest data.UserResponse, user data.User) error {
 	db := database.DB
 	updatedUserString, err := json.Marshal(userRequest)
 	if err != nil {
@@ -164,7 +164,7 @@ func CreateUser() error {
 		return err
 	}
 
-	userData := model.UserResponse{
+	userData := data.UserResponse{
 		ID:                 id.String(),
 		First_Name:         "Chris",
 		Last_Name:          "string `json:\"last_name\"`",
@@ -185,7 +185,7 @@ func CreateUser() error {
 		return err
 	}
 
-	err = db.Create(&model.User{
+	err = db.Create(&data.User{
 		ID:              id.String(),
 		User_Data:       string(jsonData),
 		Visitor_UUID:    id.String(),

@@ -1,8 +1,8 @@
 build:
-	go build -o server main.go
+	@go build -o ./bin/server main.go
 
 run: build
-	./server
+	@./bin/server
 
 watch:
-	reflex -s -r '\.go$$' make run
+	@reflex -s -r '\.go$$' make run
