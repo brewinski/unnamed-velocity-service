@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/brewinski/unnamed-fiber/data"
-	"github.com/brewinski/unnamed-fiber/platform/database"
+	"github.com/brewinski/unnamed-fiber/db"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -10,7 +10,7 @@ import (
 // Keep logic portable by extracting the request values we need and passing them to the worker functions.
 
 func CreateNoteHandler(c *fiber.Ctx) error {
-	// db := database.DB
+	// db := db.DB
 	note := data.Note{}
 
 	// store the body of the note in the note variable
@@ -36,7 +36,7 @@ func CreateNoteHandler(c *fiber.Ctx) error {
 }
 
 func CreateNote(note data.Note) (data.Note, error) {
-	db := database.DB
+	db := db.DB
 
 	err := db.Create(&note).Error
 
@@ -48,7 +48,7 @@ func CreateNote(note data.Note) (data.Note, error) {
 }
 
 func readNote(id int) (data.Note, error) {
-	db := database.DB
+	db := db.DB
 	note := data.Note{}
 
 	err := db.First(&note, id).Error

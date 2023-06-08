@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/brewinski/unnamed-fiber/data"
-	"github.com/brewinski/unnamed-fiber/platform/database"
+	"github.com/brewinski/unnamed-fiber/db"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
@@ -63,7 +63,7 @@ func ListUsersHandler(c *fiber.Ctx) error {
 }
 
 func GetCreditScoreByUserID(userID string) (*data.Credit, error) {
-	db := database.DB
+	db := db.DB
 	credit := &data.Credit{}
 
 	err := db.Joins("User").Find(credit, "user_id = ?", userID).Error
@@ -75,7 +75,7 @@ func GetCreditScoreByUserID(userID string) (*data.Credit, error) {
 }
 
 func DeleteCreditScoreByUserID(userID string) error {
-	db := database.DB
+	db := db.DB
 	credit := &data.Credit{}
 
 	err := db.Delete(credit, "user_id = ?", userID).Error
@@ -87,7 +87,7 @@ func DeleteCreditScoreByUserID(userID string) error {
 }
 
 func CreateCreditScoreByUserID(userID string) (*data.Credit, error) {
-	db := database.DB
+	db := db.DB
 	err := db.Create(&data.Credit{Score: "100", User: data.User{ID: userID}}).Error
 	if err != nil {
 		return nil, err
@@ -120,7 +120,7 @@ func UpdateUserDataHandler(c *fiber.Ctx) error {
 }
 
 func ListUsers() ([]data.User, error) {
-	db := database.DB
+	db := db.DB
 	users := []data.User{}
 
 	err := db.Find(&users).Error
@@ -132,7 +132,7 @@ func ListUsers() ([]data.User, error) {
 }
 
 func GetUserByID(id string) (*data.User, error) {
-	db := database.DB
+	db := db.DB
 	user := &data.User{}
 
 	err := db.Where("id = ?", id).First(&user).Error
@@ -144,7 +144,7 @@ func GetUserByID(id string) (*data.User, error) {
 }
 
 func UpdateUserData(userRequest data.UserResponse, user data.User) error {
-	db := database.DB
+	db := db.DB
 	updatedUserString, err := json.Marshal(userRequest)
 	if err != nil {
 		return err
@@ -157,7 +157,7 @@ func UpdateUserData(userRequest data.UserResponse, user data.User) error {
 }
 
 func CreateUser() error {
-	db := database.DB
+	db := db.DB
 
 	id, err := uuid.NewUUID()
 	if err != nil {
