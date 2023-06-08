@@ -204,6 +204,5 @@ func ReadEncryptedDEK(name string, encodedCiphertext string) (*kmspb.DecryptResp
 		return nil, fmt.Errorf("decrypt: response corrupted in-transit")
 	}
 
-	fmt.Print("Decrypted plaintext: ", result.Plaintext)
 	return result, nil
 }

@@ -1,7 +1,9 @@
 package model
 
 import (
+	"log"
 	"strings"
+	"time"
 
 	"github.com/brewinski/unnamed-fiber/pkg/config"
 	"github.com/brewinski/unnamed-fiber/pkg/envelope"
@@ -10,7 +12,7 @@ import (
 
 type User struct {
 	gorm.Model               // Adds some metadata fields to the table
-	ID                string `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"` // Explicitly specify the type to be uuid
+	ID                string `gorm:"primary_key;"` // Explicitly specify the type to be uuid
 	Visitor_UUID      string
 	Unsubscribe_Key   string
 	Ciphertext        string `enc:"type:dek;key_name:USER_MASTER_DECRYPT_KEY"` // Encrypt this field with the specified algorithm
@@ -24,7 +26,8 @@ type User struct {
 }
 
 // setup gorm object lifecycle hooks
-func (user *User) AfterFind(tx *gorm.DB) (err error) {
+func (user *User) Decrypt() (err error) {
+	start := time.Now()
 	// get the DEK from the KMS
 	decryptedDek, err := envelope.ReadEncryptedDEK(config.Config("MASTER_KEY_USER_ENCRYPT_NAME"), user.Ciphertext)
 	if err != nil {
@@ -36,48 +39,16 @@ func (user *User) AfterFind(tx *gorm.DB) (err error) {
 		return err
 	}
 
-	if user.Test_Field != "" {
-		testField, err := envelope.ReadEncryptedDataWithDEK(user.Test_Field, string(decryptedDek.Plaintext))
-		if err != nil {
-			return err
-		}
-
-		user.Test_Field = testField
-	}
-
-	if user.First_Name != "" {
-		firstNameField, err := envelope.ReadEncryptedDataWithDEK(user.First_Name, string(decryptedDek.Plaintext))
-		if err != nil {
-			return err
-		}
-
-		user.First_Name = firstNameField
-	}
-
-	if user.First_Name_2 != "" {
-		firstName2Field, err := envelope.ReadEncryptedDataWithDEK(user.First_Name, string(decryptedDek.Plaintext))
-		if err != nil {
-			return err
-		}
-
-		user.First_Name_2 = firstName2Field
-	}
-
-	if user.Last_Name != "" {
-		lastNameField, err := envelope.ReadEncryptedDataWithDEK(user.Last_Name, string(decryptedDek.Plaintext))
-		if err != nil {
-			return err
-		}
-
-		user.Last_Name = lastNameField
-	}
 	// replace the user data with the decrypted data
 	user.User_Data = userData
 
+	elapsed := time.Since(start)
+	log.Printf("User Decrypt took %s", elapsed)
 	return nil
 }
 
-func (user *User) BeforeSave(tx *gorm.DB) (err error) {
+func (user *User) Encrypt() (err error) {
+	start := time.Now()
 	// encrypt the user data
 	dek, err := envelope.CreateNewDEK(strings.Split(config.Config("MASTER_KEY_USER_ENCRYPT_NAME"), "/keyRings/")[0])
 	if err != nil {
@@ -94,34 +65,11 @@ func (user *User) BeforeSave(tx *gorm.DB) (err error) {
 		return err
 	}
 
-	encryptedTestField, err := envelope.EncryptDataWithDEK(dek.Data, user.Test_Field)
-	if err != nil {
-		return err
-	}
-
-	encryptedFirstName, err := envelope.EncryptDataWithDEK(dek.Data, user.First_Name)
-	if err != nil {
-		return err
-	}
-
-	encryptedFirstName2, err := envelope.EncryptDataWithDEK(dek.Data, user.First_Name)
-	if err != nil {
-		return err
-	}
-
-	encryptedLastName, err := envelope.EncryptDataWithDEK(dek.Data, user.Last_Name)
-	if err != nil {
-		return err
-	}
-
 	// set the DEK and encrypted user data
 	user.Ciphertext = encryptedDek
 	user.User_Data = encryptedUserData
-	user.Test_Field = encryptedTestField
-	user.First_Name = encryptedFirstName
-	user.First_Name_2 = encryptedFirstName2
-	user.Last_Name = encryptedLastName
-
+	elapsed := time.Since(start)
+	log.Printf("User Encrypt took %s", elapsed)
 	return nil
 }
 
@@ -140,4 +88,51 @@ type UserResponse struct {
 	Last_Modified_Date string `json:"last_modified_date"`
 	Last_Login_Date    string `json:"last_login_date"`
 	Accepted_Timestamp string `json:"accepted_timestamp"`
+}
+
+type Credit struct {
+	gorm.Model
+	Score      string
+	Ciphertext string `enc:"type:dek;key_name:USER_MASTER_DECRYPT_KEY"`
+	UserID     string
+	User       User `gorm:"references:id"`
+}
+
+// setup gorm object lifecycle hooks
+func (credit *Credit) AfterFind(tx *gorm.DB) (err error) {
+	start := time.Now()
+	// get the DEK from the KMS
+	decryptedDek, err := envelope.ReadEncryptedDEK(config.Config("MASTER_KEY_USER_ENCRYPT_NAME"), credit.Ciphertext)
+	if err != nil {
+		return err
+	}
+	score, err := envelope.ReadEncryptedDataWithDEK(credit.Score, string(decryptedDek.Plaintext))
+	if err != nil {
+		return err
+	}
+	// replace the user data with the decrypted data
+	credit.Score = score
+	elapsed := time.Since(start)
+	log.Printf("Credit Decrypt took %s", elapsed)
+	return nil
+}
+
+func (credit *Credit) BeforeSave(tx *gorm.DB) (err error) {
+	// encrypt the user data
+	dek, err := envelope.CreateNewDEK(strings.Split(config.Config("MASTER_KEY_USER_ENCRYPT_NAME"), "/keyRings/")[0])
+	if err != nil {
+		return err
+	}
+	encryptedDek, err := envelope.EncryptDEK(dek.Data, config.Config("MASTER_KEY_USER_ENCRYPT_NAME"))
+	if err != nil {
+		return err
+	}
+	encryptedScore, err := envelope.EncryptDataWithDEK(dek.Data, credit.Score)
+	if err != nil {
+		return err
+	}
+	credit.Score = encryptedScore
+	credit.Ciphertext = encryptedDek
+
+	return nil
 }

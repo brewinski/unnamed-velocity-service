@@ -10,6 +10,5 @@ Content-Type: application/json
 }
 
 ###
-
 GET {{baseUrl}}/api/v1/user
 Content-Type: application/json

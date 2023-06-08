@@ -41,7 +41,7 @@ func ConnectDB() {
 	fmt.Println("Connection Opened to Database")
 
 	// Migrate the schema
-	err = DB.AutoMigrate(&model.Note{}, &model.User{})
+	err = DB.AutoMigrate(&model.Note{}, &model.User{}, &model.Credit{})
 
 	if err != nil {
 		panic("failed to migrate database")
@@ -64,7 +64,7 @@ func ConnectSqliteDB() {
 	fmt.Println("Connection Opened to Database")
 
 	// Migrate the schema
-	err = DB.Debug().AutoMigrate(&model.Note{}, &model.User{})
+	err = DB.Debug().AutoMigrate(&model.Note{}, &model.User{}, &model.Credit{})
 
 	if err != nil {
 		panic("failed to migrate database")

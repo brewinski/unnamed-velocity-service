@@ -6,6 +6,7 @@ import (
 	"github.com/brewinski/unnamed-fiber/internal/model"
 	"github.com/brewinski/unnamed-fiber/platform/database"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 // This handler should abstract saving a note from the fiber fameowrk implementation details.
@@ -21,9 +22,21 @@ func ListUsersHandler(c *fiber.Ctx) error {
 		return fiber.ErrNotFound
 	}
 
+	// decrypt all users in parallel
+	userChannel := make(chan model.User, len(users))
+	limit := make(chan struct{}, 10)
+	for _, user := range users {
+		limit <- struct{}{}
+		go func(user model.User) {
+			user.Decrypt()
+			userChannel <- user
+			<-limit
+		}(user)
+	}
+
 	usersResponse := []model.UserResponse{}
 
-	for _, user := range users {
+	for user := range userChannel {
 		data := model.UserResponse{}
 		err = json.Unmarshal([]byte(user.User_Data), &data)
 		if err != nil {
@@ -32,21 +45,62 @@ func ListUsersHandler(c *fiber.Ctx) error {
 
 		usersResponse = append(usersResponse, data)
 
-		user.Test_Field = "test"
-		user.First_Name = data.First_Name
-		user.Last_Name = data.Last_Name
+		// err := UpdateUserData(data, user)
+		// creditScore, err := CreateCreditScoreByUserID(user.ID)
+		// err := DeleteCreditScoreByUserID(user.ID)
+		// creditScore, err := GetCreditScoreByUserID(user.ID)
+		// if err != nil {
+		// 	return fiber.ErrInternalServerError
+		// }
 
-		err := UpdateUserData(data, user)
-		if err != nil {
-			return fiber.ErrInternalServerError
-		}
+		// err = CreateUser()
+		// if err != nil {
+		// 	return fiber.ErrInternalServerError
+		// }
 	}
 
 	return c.JSON(usersResponse)
 }
 
+func GetCreditScoreByUserID(userID string) (*model.Credit, error) {
+	db := database.DB
+	credit := &model.Credit{}
+
+	err := db.Joins("User").Find(credit, "user_id = ?", userID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return credit, nil
+}
+
+func DeleteCreditScoreByUserID(userID string) error {
+	db := database.DB
+	credit := &model.Credit{}
+
+	err := db.Delete(credit, "user_id = ?", userID).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func CreateCreditScoreByUserID(userID string) (*model.Credit, error) {
+	db := database.DB
+	err := db.Create(&model.Credit{Score: "100", User: model.User{ID: userID}}).Error
+	if err != nil {
+		return nil, err
+	}
+
+	credit := &model.Credit{}
+	db.Find(credit, "user_id = ?", userID)
+
+	return credit, nil
+}
+
 func UpdateUserDataHandler(c *fiber.Ctx) error {
-	userRequest := new(model.UserResponse)
+	userRequest := &model.UserResponse{}
 	err := c.BodyParser(userRequest)
 	if err != nil {
 		return err
@@ -98,6 +152,49 @@ func UpdateUserData(userRequest model.UserResponse, user model.User) error {
 
 	user.User_Data = string(updatedUserString)
 	db.Save(&user)
+
+	return nil
+}
+
+func CreateUser() error {
+	db := database.DB
+
+	id, err := uuid.NewUUID()
+	if err != nil {
+		return err
+	}
+
+	userData := model.UserResponse{
+		ID:                 id.String(),
+		First_Name:         "Chris",
+		Last_Name:          "string `json:\"last_name\"`",
+		Nick_Name:          "string `json:\"nickname\"`",
+		Provider:           "string `json:\"provider\"`",
+		Signed_Up_From:     "string `json:\"signed_up_from\"`",
+		Visitor_UUID:       "string `json:\"visitor_uuid\"`",
+		Username:           "string `json:\"username\"`",
+		Unsubscribe_Key:    "string `json:\"unsubscribe_key\"`",
+		Created_Date:       "string `json:\"created_date\"`",
+		Last_Modified_Date: "string `json:\"last_modified_date\"`",
+		Last_Login_Date:    "string `json:\"last_login_date\"`",
+		Accepted_Timestamp: "string `json:\"accepted_timestamp\"`",
+	}
+
+	jsonData, err := json.Marshal(userData)
+	if err != nil {
+		return err
+	}
+
+	err = db.Create(&model.User{
+		ID:              id.String(),
+		User_Data:       string(jsonData),
+		Visitor_UUID:    id.String(),
+		Unsubscribe_Key: id.String(),
+	}).Error
+
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
