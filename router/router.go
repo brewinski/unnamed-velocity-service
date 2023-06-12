@@ -13,6 +13,7 @@ func SetupRoutes(app *fiber.App) {
 	})) // Group endpoints with param 'health'
 
 	health.Get("/", func(c *fiber.Ctx) error {
+		println("Health check")
 		return c.SendString("OK")
 	})
 

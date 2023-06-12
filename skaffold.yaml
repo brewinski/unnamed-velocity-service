@@ -3,8 +3,8 @@ kind: Config
 metadata:
   name: unnamed-velocity-service
 build:
-  # local:
-  #   push: false
+  local:
+    push: false
   artifacts:
     - image: velocity-lead-service
       # sync:
@@ -13,7 +13,7 @@ build:
         #     dest: /usr/src/app/
       docker:
         dockerfile: Dockerfile
-        target: production-build-stage
+        target: development-build-stage
   tagPolicy:
     sha256: {}
       
@@ -55,13 +55,13 @@ profiles:
             createNamespace: true
 
 
-    # patches:
-    #   - op: replace
-    #     path: /build/artifacts/0/docker/buildArgs/DEBUG_PORT
-    #     value: ""
-    #   - op: replace
-    #     path: /build/artifacts/0/docker/target
-    #     value: "production-build-stage"
+    patches:
+      - op: replace
+        path: /build/artifacts/0/docker/buildArgs/DEBUG_PORT
+        value: ""
+      - op: replace
+        path: /build/artifacts/0/docker/target
+        value: "production-build-stage"
 
   - name: preproduction
     deploy:
@@ -79,13 +79,13 @@ profiles:
             namespace: velocity-lead-service
             useHelmSecrets: false
 
-    # patches:
-    #   - op: replace
-    #     path: /build/artifacts/0/docker/buildArgs/DEBUG_PORT
-    #     value: ""
-    #   - op: replace
-    #     path: /build/artifacts/0/docker/target
-    #     value: "production-build-stage"
+    patches:
+      - op: replace
+        path: /build/artifacts/0/docker/buildArgs/DEBUG_PORT
+        value: ""
+      - op: replace
+        path: /build/artifacts/0/docker/target
+        value: "production-build-stage"
 
   - name: production
     deploy:
@@ -102,10 +102,11 @@ profiles:
               deploymentEnv: "{{ .DEPLOYMENT_ENV }}"
             namespace: velocity-lead-service
             useHelmSecrets: true
-    # patches:
-    #   - op: replace
-    #     path: /build/artifacts/0/docker/buildArgs/DEBUG_PORT
-    #     value: ""
-    #   - op: replace
-    #     path: /build/artifacts/0/docker/target
-    #     value: "production-build-stage"
+            
+    patches:
+      - op: replace
+        path: /build/artifacts/0/docker/buildArgs/DEBUG_PORT
+        value: ""
+      - op: replace
+        path: /build/artifacts/0/docker/target
+        value: "production-build-stage"

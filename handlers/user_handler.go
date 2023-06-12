@@ -24,7 +24,10 @@ func ListUsersHandler(c *fiber.Ctx) error {
 
 	// decrypt all users in parallel
 	userChannel := make(chan data.User, len(users))
-	limit := make(chan struct{}, 10)
+	defer close(userChannel)
+	limit := make(chan struct{}, 100)
+	defer close(limit)
+
 	for _, user := range users {
 		limit <- struct{}{}
 		go func(user data.User) {
@@ -36,7 +39,8 @@ func ListUsersHandler(c *fiber.Ctx) error {
 
 	usersResponse := []data.UserResponse{}
 
-	for user := range userChannel {
+	for range users {
+		user := <-userChannel
 		data := data.UserResponse{}
 		err = json.Unmarshal([]byte(user.User_Data), &data)
 		if err != nil {
