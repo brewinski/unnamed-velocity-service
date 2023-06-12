@@ -16,5 +16,8 @@ func main() {
 	router.SetupRoutes(app)
 	// Listen on PORT
 	port := config.Config("PORT")
-	app.Listen(":" + port)
+	err := app.Listen(":" + port)
+	if err != nil {
+		panic(err)
+	}
 }
