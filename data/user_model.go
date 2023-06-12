@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/brewinski/unnamed-fiber/pkg/config"
-	"github.com/brewinski/unnamed-fiber/pkg/envelope"
+	"github.com/brewinski/unnamed-fiber/config"
+	"github.com/brewinski/unnamed-fiber/envelope"
 	"gorm.io/gorm"
 )
 

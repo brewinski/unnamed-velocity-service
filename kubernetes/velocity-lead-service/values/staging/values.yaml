@@ -1,0 +1,39 @@
+replicaCount: 1
+deploymentEnvironment: staging
+
+environment:
+  ENV: staging
+  # PORT
+  PORT: '80'
+  # TODO: testing 1234
+  DB_HOST: user-profile-db.default
+  DB_NAME: auth
+  DB_USER: postgres
+  DB_PASSWORD: password
+  DB_PORT: '5432'
+  GOOGLE_APPLICATION_CREDENTIALS: user-profile-credentials.json
+  MASTER_KEY_USER_ENCRYPT_NAME: projects/user-profile-dev-262302/locations/global/keyRings/user-profile-key-ring/cryptoKeys/user-profile-key
+
+ambassador:
+  id: ["emissary-internal"]
+
+podSecurityContext:
+  fsGroup: 2000
+
+serviceaccount:
+  enabled: true
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+# TODO
+# serviceAccount:
+#   annotations: 
+#     eks.amazonaws.com/role-arn: arn:aws:iam::<account>:role/<role-name>
+
+# ingress groups attributes used by the ambassador template

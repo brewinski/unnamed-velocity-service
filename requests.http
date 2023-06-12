@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:5001
+@baseUrl = http://localhost:3500
 
 POST {{baseUrl}}/api/v1/note
 Content-Type: application/json

@@ -15,5 +15,9 @@ func Config(key string) string {
 		fmt.Print("Error loading .env file")
 	}
 	// Return the value of the variable
-	return os.Getenv(key)
+	envValue := os.Getenv(key)
+
+	println("envValue: ", envValue)
+
+	return envValue
 }

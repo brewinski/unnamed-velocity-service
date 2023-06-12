@@ -5,8 +5,8 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/brewinski/unnamed-fiber/config"
 	"github.com/brewinski/unnamed-fiber/data"
-	"github.com/brewinski/unnamed-fiber/pkg/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -24,7 +24,7 @@ func ConnectDB() {
 	port, err := strconv.ParseUint(p, 10, 32)
 
 	if err != nil {
-		log.Println("Idiot")
+		log.Println("Unable to parse DB_PORT to int")
 	}
 
 	// Connection URL to connect to Postgres Database

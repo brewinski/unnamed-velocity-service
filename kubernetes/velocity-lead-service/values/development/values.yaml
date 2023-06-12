@@ -1,0 +1,34 @@
+# replicaCount is the number of pods to run
+replicaCount: 1
+# deploymentEnvironment is used to create a fully qualified DNS name
+deploymentEnvironment: development
+
+# environment groups attributes that the application consumes
+environment:
+  # ENV is the environment type it is running under
+  ENV: development
+  DB_HOST: user-profile-db.default
+  DB_NAME: auth
+  DB_USER: postgres
+  DB_PASSWORD: password
+  DB_PORT: '5432'
+  GOOGLE_APPLICATION_CREDENTIALS: user-profile-credentials.json
+  MASTER_KEY_USER_ENCRYPT_NAME: projects/user-profile-dev-262302/locations/global/keyRings/user-profile-key-ring/cryptoKeys/user-profile-key
+  PORT: '80'
+
+
+# ingress groups attributes used by the ambassador template
+ambassador:
+  id: default
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false

@@ -8,6 +8,13 @@ import (
 
 // SetupRoutes func to setup routes
 func SetupRoutes(app *fiber.App) {
+	health := app.Group("", logger.New(), recover.New(recover.Config{
+		EnableStackTrace: true,
+	})) // Group endpoints with param 'health'
+
+	health.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("OK")
+	})
 
 	api := app.Group("api", logger.New(), recover.New(recover.Config{
 		EnableStackTrace: true,

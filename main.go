@@ -1,8 +1,9 @@
 package main
 
 import (
+	"github.com/brewinski/unnamed-fiber/config"
 	"github.com/brewinski/unnamed-fiber/db"
-	router "github.com/brewinski/unnamed-fiber/router"
+	"github.com/brewinski/unnamed-fiber/router"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -13,6 +14,7 @@ func main() {
 	db.ConnectDB()
 	// setup routes
 	router.SetupRoutes(app)
-	// Listen on PORT 3000
-	app.Listen(":5001")
+	// Listen on PORT
+	port := config.Config("PORT")
+	app.Listen(":" + port)
 }

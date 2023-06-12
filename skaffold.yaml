@@ -1,0 +1,111 @@
+apiVersion: skaffold/v4beta5
+kind: Config
+metadata:
+  name: unnamed-velocity-service
+build:
+  # local:
+  #   push: false
+  artifacts:
+    - image: velocity-lead-service
+      # sync:
+        # manual:
+        #   - src: "**/*.go"
+        #     dest: /usr/src/app/
+      docker:
+        dockerfile: Dockerfile
+        target: production-build-stage
+  tagPolicy:
+    sha256: {}
+      
+deploy: 
+  helm:
+    releases:
+      - name: velocity-lead-service
+        chartPath: kubernetes/velocity-lead-service
+        valuesFiles:
+          - kubernetes/velocity-lead-service/values.yaml
+          - kubernetes/velocity-lead-service/values/development/values.yaml
+        version: 0.1.0
+        createNamespace: true
+        
+
+portForward:
+  - resourceType: deployment
+    resourceName: velocity-lead-service
+    namespace: default
+    port: 80
+    localPort: 3500
+
+profiles:
+  - name: staging
+    deploy:
+      helm:
+        releases:
+          - name: velocity-lead-service-{{ .DEPLOYMENT_ENV }}
+            chartPath: kubernetes/velocity-lead-service
+            valuesFiles:
+              - kubernetes/velocity-lead-service/values.yaml
+              - kubernetes/velocity-lead-service/values/staging/values.yaml
+            setValues:
+              image.repository: velocity-lead-service
+            setValueTemplates:
+              deploymentEnv: "{{ .DEPLOYMENT_ENV }}"
+            namespace: velocity-lead-service
+            useHelmSecrets: false
+            createNamespace: true
+
+
+    # patches:
+    #   - op: replace
+    #     path: /build/artifacts/0/docker/buildArgs/DEBUG_PORT
+    #     value: ""
+    #   - op: replace
+    #     path: /build/artifacts/0/docker/target
+    #     value: "production-build-stage"
+
+  - name: preproduction
+    deploy:
+      helm:
+        releases:
+          - name: velocity-lead-service-{{ .DEPLOYMENT_ENV }}
+            chartPath: kubernetes/velocity-lead-service
+            valuesFiles:
+              - kubernetes/velocity-lead-service/values.yaml
+              - kubernetes/velocity-lead-service/values/preproduction/values.yaml
+            setValues:
+              image.repository: velocity-lead-service
+            setValueTemplates:
+              deploymentEnv: "{{ .DEPLOYMENT_ENV }}"
+            namespace: velocity-lead-service
+            useHelmSecrets: false
+
+    # patches:
+    #   - op: replace
+    #     path: /build/artifacts/0/docker/buildArgs/DEBUG_PORT
+    #     value: ""
+    #   - op: replace
+    #     path: /build/artifacts/0/docker/target
+    #     value: "production-build-stage"
+
+  - name: production
+    deploy:
+      helm:
+        releases:
+          - name: velocity-lead-service-{{ .DEPLOYMENT_ENV }}
+            chartPath: kubernetes/velocity-lead-service
+            valuesFiles:
+              - kubernetes/velocity-lead-service/values.yaml
+              - kubernetes/velocity-lead-service/values/production/values.yaml
+            setValues:
+              image.repository: velocity-lead-service
+            setValueTemplates:
+              deploymentEnv: "{{ .DEPLOYMENT_ENV }}"
+            namespace: velocity-lead-service
+            useHelmSecrets: true
+    # patches:
+    #   - op: replace
+    #     path: /build/artifacts/0/docker/buildArgs/DEBUG_PORT
+    #     value: ""
+    #   - op: replace
+    #     path: /build/artifacts/0/docker/target
+    #     value: "production-build-stage"

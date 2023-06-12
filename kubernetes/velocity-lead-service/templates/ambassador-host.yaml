@@ -1,0 +1,14 @@
+{{- $fullName := include "velocity-lead-service.fullname" . -}}
+{{- $hostname := include "velocity-lead-service.dnsname" . -}}
+apiVersion: getambassador.io/v2
+kind: Host
+metadata:
+  name: {{ $fullName }}
+spec:
+  ambassador_id: {{ .Values.ambassador.id }}
+  hostname: {{ $hostname }}
+  acmeProvider:
+    authority: none
+  requestPolicy:
+    insecure:
+      action: Route

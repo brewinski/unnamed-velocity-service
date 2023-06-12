@@ -1,0 +1,13 @@
+skaffold.yaml
+kubernetes
+Makefile
+*.http
+
+bin
+
+__debug_bin
+
+.vscode
+.github
+
+Dockerfile

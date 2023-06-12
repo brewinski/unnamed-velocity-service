@@ -3,7 +3,7 @@ package router
 import (
 	"github.com/brewinski/unnamed-fiber/data"
 	"github.com/brewinski/unnamed-fiber/handlers"
-	"github.com/brewinski/unnamed-fiber/pkg/middleware"
+	"github.com/brewinski/unnamed-fiber/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 

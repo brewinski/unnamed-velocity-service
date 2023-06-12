@@ -5,12 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Unnamed Fiber",
+            "name": "Debug Velocity Service",
             "type": "go",
             "request": "launch",
             "mode": "debug",
             "host": "127.0.0.1",
             "program": "${workspaceFolder}/main.go",      
+        },
+        {
+            "name": "Attach Debug Velocity Service",
+            "type": "go",
+            "request": "attach",
+            "mode": "remote",
+            "port": 40000,
+            "host": "127.0.0.1",
         }
     ]
 }
