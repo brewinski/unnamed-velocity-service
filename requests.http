@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:3500
+@baseUrl = http://localhost:3501
 
 POST {{baseUrl}}/api/v1/note
 Content-Type: application/json
@@ -12,3 +12,14 @@ Content-Type: application/json
 ###
 GET {{baseUrl}}/api/v1/user
 Content-Type: application/json
+
+###
+POST {{baseUrl}}/api/v1/velocity/points-earn
+Content-Type: application/json
+
+{
+    "MembershipID": "1406534480",
+    "PointsToAllocate": 220,
+    "LeadUID": "Textss",
+    "PointsAllocationDate": "2023-05-20"
+}
