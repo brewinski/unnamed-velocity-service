@@ -25,7 +25,7 @@ func ListUsersHandler(c *fiber.Ctx) error {
 	// decrypt all users in parallel
 	userChannel := make(chan data.User, len(users))
 	defer close(userChannel)
-	limit := make(chan struct{}, 10)
+	limit := make(chan struct{}, 100)
 	defer close(limit)
 
 	for _, user := range users {

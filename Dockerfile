@@ -1,6 +1,7 @@
 FROM golang:1.20 as common-build-stage
 
 WORKDIR /usr/src/app
+RUN export CGO_ENABLED=0
 
 # pre-copy/cache go.mod for pre-downloading dependencies and only redownloading them in subsequent builds if they change
 COPY go.mod go.sum ./
