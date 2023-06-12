@@ -36,7 +36,8 @@ func ListUsersHandler(c *fiber.Ctx) error {
 
 	usersResponse := []data.UserResponse{}
 
-	for user := range userChannel {
+	for range users {
+		user := <-userChannel
 		data := data.UserResponse{}
 		err = json.Unmarshal([]byte(user.User_Data), &data)
 		if err != nil {
