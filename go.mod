@@ -5,7 +5,7 @@ go 1.20
 require (
 	cloud.google.com/go/kms v1.11.0
 	github.com/gofiber/fiber/v2 v2.46.0
-	google.golang.org/protobuf v1.30.0
+	google.golang.org/protobuf v1.33.0
 )
 
 require (
